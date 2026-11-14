@@ -1,7 +1,39 @@
 import { useState } from 'react'
 import './App.css'
+import GameCard from './components/GameCard';
+import type { Game } from './types';
 
 function App() {
+
+  const testGames: Game[] = [
+    {
+      id: '1',
+      title: 'Portal',
+      platform: 'PC',
+      status: 'completed',
+      rating: 5,
+      coverUrl: 'https://upload.wikimedia.org/wikipedia/en/9/9f/Portal_standalonebox.jpg',
+      notes: 'A first-person puzzle-platformer game developed by Valve Corporation.'
+    },
+    {
+      id: '2',
+      title: 'The Legend of Zelda: Breath of the Wild',
+      platform: 'Nintendo Switch',
+      status: 'playing',
+      rating: 4,
+      coverUrl: 'https://upload.wikimedia.org/wikipedia/en/0/0b/The_Legend_of_Zelda_Breath_of_the_Wild.jpg',
+      notes: 'An action-adventure game developed and published by Nintendo.'
+    },
+    {
+      id: '3',
+      title: 'Hollow Knight',
+      platform: 'PC',
+      status: 'want',
+      rating: null,
+      coverUrl: 'https://upload.wikimedia.org/wikipedia/en/3/3a/Hollow_Knight_cover_art.jpg',
+      notes: 'A Metroidvania action-adventure game developed and published by Team Cherry.'
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-[#1b2838] text-[#c7d5e0]">
@@ -20,15 +52,9 @@ function App() {
 
     <main>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6'>
-        <article className='bg-[#16202d] rounded-lg overflow-hidden shadow-lg hover:-translate-y-1 hover:shadow-[0_0_15px_#d946ef,0_0_30px_#d946ef] transition'>
-          <img className='w-full aspect-[3/4] object-cover' src="https://upload.wikimedia.org/wikipedia/en/9/9f/Portal_standalonebox.jpg" alt="Portal game cover" />
-          <div className='text-center p-4'>
-          <h2 className='text-3xl font-bold'>Portal</h2>
-          <p className='text-lg'>A first-person puzzle-platformer game developed by Valve Corporation.</p>
-          <p className='text-lg'>Status: Completed</p>
-          <p className='text-lg'>Rating: 5/5</p>
-          </div>
-        </article>
+        {testGames.map((game) => (
+          <GameCard key={game.id} game={game} />
+        ))}
       </div>
     </main>
     </div>
