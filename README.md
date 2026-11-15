@@ -1,5 +1,7 @@
 # Questlog
 
+<img width="1682" height="934" alt="bild" src="https://github.com/user-attachments/assets/358069f4-7b7b-42ea-87b5-87486a0712aa" />
+
 En personlig spelbacklog byggd med React, TypeScript, React Router och Tailwind CSS. Här kan du lista och filtrera spel på status, se detaljer om ett spel, lägga till nya spel samt uppdatera eller ta bort befintliga spel.
 
 ## Mål med inlämningen
