@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import type { Game, GameStatus } from '../types';
+import { useSaveGame } from '../hooks/useGames';
+import { useNavigate } from 'react-router';
 
 export default function NewGamePage() {
 const [title, setTitle] = useState('');
@@ -9,7 +11,10 @@ const [rating, setRating] = useState<number | null>(null);
 const [coverUrl, setCoverUrl] = useState('');
 const [notes, setNotes] = useState('');
 
-const handleSubmit = (e: React.FormEvent) => {
+const { createGame, saving, error } = useSaveGame();
+const navigate = useNavigate();
+
+const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
   e.preventDefault();
   const newGame: Omit<Game, 'id'> = {
     title,
@@ -19,14 +24,17 @@ const handleSubmit = (e: React.FormEvent) => {
     coverUrl,
     notes
   };
-  console.log('New game added:', newGame);
+  const saved = await createGame(newGame);
   // Reset form fields
-  setTitle('');
-  setPlatform('');
-  setStatus('want');
-  setRating(null);
-  setCoverUrl('');
-  setNotes('');
+  if (saved) {
+    setTitle('');
+    setPlatform('');
+    setStatus('want');
+    setRating(null);
+    setCoverUrl('');
+    setNotes('');
+    navigate('/');
+  }
 };
 
 return (
@@ -42,6 +50,8 @@ return (
         <input type="number" value={rating ?? ''} onChange={(e) => setRating(e.target.value ? parseInt(e.target.value) : null)} placeholder="Rating (1-5)" min="1" max="5" className="w-full p-2 mb-4 rounded bg-[#16202d] text-[#c7d5e0]" />
         <input value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} placeholder="Cover URL" className="w-full p-2 mb-4 rounded bg-[#16202d] text-[#c7d5e0]" />
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes" className="w-full p-2 mb-4 rounded bg-[#16202d] text-[#c7d5e0]" />
-        <button type="submit" className="w-full p-2 bg-[#22d3ee] text-black font-bold rounded hover:shadow-[0_0_15px_#d946ef,0_0_30px_#d946ef] cursor-pointer transition">Add Game</button>
+            {error && <p className="text-red-500">{error}</p>}
+        <button type="submit" disabled={saving} className="w-full p-2 bg-[#22d3ee] text-black font-bold rounded hover:shadow-[0_0_15px_#d946ef,0_0_30px_#d946ef] cursor-pointer transition">{saving ? 'Saving...' : 'Add Game'}</button>
     </form>
-)};
+  );
+}
