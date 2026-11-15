@@ -68,3 +68,106 @@ export function useSaveGame() {
 
     return { createGame, saving, error };
 }
+
+export function useGame (id: string | undefined) {
+    const [game, setGame] = useState<Game | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!id) {
+            setLoading(false);
+            return;
+        }
+
+        async function fetchGame() {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const response = await fetch(`${BASE_URL}/games/${id}`);
+                if (response.status === 404) {
+                    setError('Game not found');
+                    setGame(null);
+                    return;
+                }
+                if (!response.ok) {
+                    throw new Error('Failed to load the game');
+                }
+                const data: Game = await response.json();
+                setGame(data);
+            } catch (err) {
+                setError((err as Error).message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchGame();
+    }, [id]);
+
+    return { game, loading, error, setGame };
+}
+
+export function useUpdateGame() {
+    const [updating, setUpdating] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    async function updateGame(id: string, gameData: Partial<Omit<Game, 'id'>>) {
+        setUpdating(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${BASE_URL}/games/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(gameData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update the game');
+            }
+
+            const updatedGame: Game = await response.json();
+            return updatedGame;
+        } catch (err) {
+            setError((err as Error).message);
+            return null;
+        } finally {
+            setUpdating(false);
+        }
+    }
+
+    return { updateGame, updating, error };
+}
+
+export function useDeleteGame() {
+    const [deleting, setDeleting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    async function deleteGame(id: string) {
+        setDeleting(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${BASE_URL}/games/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete the game');
+            }
+
+            return true;
+        } catch (err) {
+            setError((err as Error).message);
+            return false;
+        } finally {
+            setDeleting(false);
+        }
+    }
+
+    return { deleteGame, deleting, error };
+}
